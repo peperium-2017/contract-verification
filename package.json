@@ -1,5 +1,10 @@
 {
+  "scripts": {
+    "verify": "node --no-validate-asm verify.js"
+  },
   "dependencies": {
-    "solc": "0.4.10"
+    "ethers": "^5.7.2",
+    "solc": "0.4.10",
+    "solc0416": "npm:solc@^0.4.16"
   }
 }

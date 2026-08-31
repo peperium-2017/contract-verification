@@ -38,11 +38,15 @@ Short instructions:
 
 * Used NodeJS version `8.16.1` (see `.nvmrc` file)
 * Install solc depencency (`npm install`)
-* Run verify script `node verify.js`
+* Run verify script with `npm run verify` (not `node verify.js` directly — the old solc compiler emits harmless but noisy V8 "Invalid asm.js" warnings on modern Node; the npm script passes `--no-validate-asm` to suppress them)
 
 You should see "EUREKA"
 
 
 ## Series 2
 
-Nothing to say about this yet unfortunately
+Verified. Card: PEPESTENCIL, `0x5921F43985a027ba74EE110b77DcE09B96De943E`. Compiled with solc `v0.4.16+commit.d7661dd9`, optimization **disabled** (series 1 uses optimization on, runs=1 — don't assume the same settings apply to series 2).
+
+`verify.js` compiles series 2 with a second, separately pinned compiler (`solc0416`, installed as `npm:solc@0.4.16`) since the source uses the `interface` keyword, which requires solc >=0.4.11 and isn't supported by the `solc@0.4.10` used for series 1.
+
+Run `npm run verify` — both series print "EUREKA".
