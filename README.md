@@ -32,16 +32,7 @@ ad10c5be4dbc73d6282b1011fc543aec0c495cf43d6f9c741cdab6503afe8a380029
 
 It matches the on-chain bytecode!!
 
-I have included a nodejs script to compile the source through `solc`. 
-Short instructions:
-
-
-* Used NodeJS version `8.16.1` (see `.nvmrc` file)
-* Install solc depencency (`npm install`)
-* Run verify script with `npm run verify` (not `node verify.js` directly — the old solc compiler emits harmless but noisy V8 "Invalid asm.js" warnings on modern Node; the npm script passes `--no-validate-asm` to suppress them)
-
-You should see "EUREKA"
-
+I have included a nodejs script to compile the source through `solc` — see [Running](#running) below.
 
 ## Series 2
 
@@ -49,4 +40,24 @@ Verified. Card: PEPESTENCIL, `0x5921F43985a027ba74EE110b77DcE09B96De943E`. Compi
 
 `verify.js` compiles series 2 with a second, separately pinned compiler (`solc0416`, installed as `npm:solc@0.4.16`) since the source uses the `interface` keyword, which requires solc >=0.4.11 and isn't supported by the `solc@0.4.10` used for series 1.
 
-Run `npm run verify` — both series print "EUREKA".
+## Gallery contracts
+
+These are the factory contracts that deploy the individual card token contracts above (via `new Child(...)` / `new CardToken2(...)` from inside `createRare()`).
+
+* **v1** — `CardTokenFactory`, `0xD875c876435A79b5EB2099D06Aa97FFd4fB6FC9d`. Compiled with solc `v0.4.10+commit.f0d539ae`, optimization on, runs=200.
+* **v2** — `CardTokenFactory2`, `0xB4e34890034a13325363b3226DCE8EeEc292D626`. Compiled with solc `v0.4.16+commit.d7661dd9`, optimization disabled.
+
+A factory's deployed bytecode contains **two** embedded metadata hashes, not one: the child token contract's own creation bytecode (hash included) is baked in as literal data for the `CREATE` opcode to copy, and then the factory's own metadata hash follows at the very end. `stripMetadata()` in `verify.js` strips every occurrence it finds (not just the last one) to handle this.
+
+## Running
+
+* Uses the NodeJS version pinned in `.nvmrc` (run `nvm use` to switch to it)
+
+```
+npm install
+npm run verify
+```
+
+Use `npm run verify`, not `node verify.js` directly — the old solc compiler emits harmless but noisy V8 "Invalid asm.js" warnings on modern Node; the npm script passes `--no-validate-asm` to suppress them.
+
+All four should print "EUREKA". Target bytecode for each contract lives in `bytecode/*.txt` (raw, unstripped, as copied from Etherscan's "Deployed Bytecode" field).
